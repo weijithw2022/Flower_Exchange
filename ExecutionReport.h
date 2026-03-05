@@ -1,3 +1,6 @@
+#ifndef EXECUTIONREPORT_H
+#define EXECUTIONREPORT_H
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -9,11 +12,12 @@ private:
     string orderId;
     string clientOrderId;
     string instrument;
-    int side; 
-    int status; 
+    int side;
+    int status;
     int quantity;
     double price;
-public: 
+
+public:
     ExecutionReport(string id, string clientOrderId, string instrument, int side, int status, int quantity, double price)
         : orderId(id), clientOrderId(clientOrderId), instrument(instrument), side(side), status(status), quantity(quantity), price(price) {}
 
@@ -28,14 +32,16 @@ public:
     // string getSideString() const {
     //     return (side == 1) ? "BUY" : "SELL";
     // }
-    
+
     // string getStatusString() const {
     //     switch(status) {
     //         case 1: return "NEW";
-    //         case 2: return "FILLED"; 
+    //         case 2: return "FILLED";
     //         case 3: return "PARTIAL_FILL";
     //         case 4: return "REJECTED";
     //         default: return "UNKNOWN";
     //     }
     // }
 };
+
+#endif
