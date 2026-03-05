@@ -29,7 +29,8 @@ ExecutionReport OrderBook::addOrder(InputOrder order)
         0,
         order.getQuantity(),
         order.getPrice());
-}
+} 
+
 
 void OrderBook::displayOrderBook()
 {
@@ -49,40 +50,24 @@ void OrderBook::displayOrderBook()
 
     for (int i = 0; i < maxRows; i++)
     {
-        map<string, string> row;
+        vector<string> row(6, ""); 
 
         // Left side: Buy orders 
-        if (i < sortedBuyOrders.size())
+        if (i < (int)sortedBuyOrders.size())
         {
-            row["OrderId"] = sortedBuyOrders[i].getClientOrderId();   // Buy Order ID (left)
-            row["Qty"] = to_string(sortedBuyOrders[i].getQuantity()); // Buy Quantity
-            row["Price"] = to_string(sortedBuyOrders[i].getPrice());  // Buy Price
-        }
-        else
-        {
-            row["OrderId"] = ""; // Empty if no more buy orders
-            row["Qty"] = "";
-            row["Price"] = "";
+            row[0] = sortedBuyOrders[i].getClientOrderId();   // Buy Order ID (left)
+            row[1] = to_string(sortedBuyOrders[i].getQuantity()); // Buy Quantity
+            row[2] = to_string(sortedBuyOrders[i].getPrice());  // Buy Price
         }
         
-        if (i < sortedSellOrders.size())
+        if (i < (int)sortedSellOrders.size())
         {
-            // We need to map to the right-side headers
-            // The headers are: {"OrderId", "Qty", "Price", "Price", "Qty", "OrderId"}
-            // So indices 3, 4, 5 are for sell side
-            row["Price"] = to_string(sortedSellOrders[i].getPrice());  // Sell Price
-            row["Qty"] = to_string(sortedSellOrders[i].getQuantity()); // Sell Quantity
-            row["OrderId"] = sortedSellOrders[i].getClientOrderId();   // Sell Order ID (right)
-        }
-        else
-        {
-            // Empty if no more sell orders
-            row["Price"] = "";
-            row["Qty"] = "";
-            row["OrderId"] = "";
+            row[3] = to_string(sortedSellOrders[i].getPrice());  // Sell Price
+            row[4] = to_string(sortedSellOrders[i].getQuantity()); // Sell Quantity
+            row[5] = sortedSellOrders[i].getClientOrderId();   // Sell Order ID (right)
         }
 
         orderBookCSV.addRow(row);
     }
-
+    orderBookCSV.writeCSV();
 }

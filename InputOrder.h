@@ -18,7 +18,7 @@ class InputOrder{
             this->price = price;
         }
 
-        tuple<int, string> validate_order();
+        // tuple<int, string> validate_order();
         
         string getClientOrderId() const { return clientOrderId; }
         string getInstrument() const { return instrument; }

@@ -13,7 +13,7 @@ class GenerateCSV {
 private:
     string filename;
     vector<string> headers;
-    vector<map<string, string>> rows;
+    vector<vector<string>> rows;
     
 public:
     GenerateCSV(const string& fileName) : filename(fileName) {}
@@ -22,26 +22,14 @@ public:
         headers = headerList;
     }
     
-    void addRow(const map<string, string>& rowData) {
+    void addRow(const vector<string>& rowData) {
         rows.push_back(rowData);
-        
-        if (headers.empty()) {
-            for (const auto& pair : rowData) {
-                headers.push_back(pair.first);
-            }
-        }
-    }
-    
-    void addRows(const vector<map<string, string>>& rowsData) {
-        for (const auto& row : rowsData) {
-            addRow(row);
-        }
     }
     
     bool writeCSV() {
         ofstream file(filename);
         if (!file.is_open()) {
-            cerr << "Error: Could not open file " << filename << " for writing" << endl;
+            cerr << "Error: Could not open file " << filename << endl;
             return false;
         }
         
@@ -58,9 +46,8 @@ public:
         
         for (const auto& row : rows) {
             for (size_t i = 0; i < headers.size(); ++i) {
-                auto it = row.find(headers[i]);
-                if (it != row.end()) {
-                    file << escapeCSVField(it->second);
+                if (i < row.size()) {
+                    file << escapeCSVField(row[i]);
                 }
                 if (i < headers.size() - 1) {
                     file << ",";
@@ -74,39 +61,9 @@ public:
         return true;
     }
     
-    void clear() {
-        headers.clear();
-        rows.clear();
-    }
-    
-    int getRowCount() const {
-        return rows.size();
-    }
-    
-    // Display preview of data
-    void displayPreview(int maxRows = 5) {
-        cout << "\n=== CSV Preview ===" << endl;
-        cout << "File: " << filename << endl;
-        cout << "Headers: ";
-        for (size_t i = 0; i < headers.size(); ++i) {
-            cout << headers[i];
-            if (i < headers.size() - 1) cout << ", ";
-        }
-        cout << endl;
-        
-        cout << "Data (" << min((int)rows.size(), maxRows) << " of " << rows.size() << " rows):" << endl;
-        for (int i = 0; i < min((int)rows.size(), maxRows); ++i) {
-            for (size_t j = 0; j < headers.size(); ++j) {
-                auto it = rows[i].find(headers[j]);
-                if (it != rows[i].end()) {
-                    cout << it->second;
-                }
-                if (j < headers.size() - 1) cout << " | ";
-            }
-            cout << endl;
-        }
-        cout << "===================" << endl;
-    }
+    void clear() {headers.clear();rows.clear();}
+    int getRowCount() const {return rows.size();}
+
 
 private:
     string escapeCSVField(const string& field) {
