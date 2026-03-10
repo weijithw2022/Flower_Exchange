@@ -10,16 +10,16 @@ ExecutionReport OrderBook::addOrder(InputOrder order)
     if (order.getSide() == 1)
     {
         buyOrders.push_back(order);
-        // sort(buyOrders.begin(), buyOrders.end(), [](const InputOrder &a, const InputOrder &b) {
-        //     return a.getPrice() > b.getPrice();
-        // });
+        sort(buyOrders.begin(), buyOrders.end(), [](const InputOrder &a, const InputOrder &b) {
+            return a.getPrice() > b.getPrice();
+        });
     }
     else
     {
         sellOrders.push_back(order);
-        // sort(sellOrders.begin(), sellOrders.end(), [](const InputOrder &a, const InputOrder &b) {
-        //     return a.getPrice() < b.getPrice();
-        // });
+        sort(sellOrders.begin(), sellOrders.end(), [](const InputOrder &a, const InputOrder &b) {
+            return a.getPrice() < b.getPrice();
+        });
     }
     return ExecutionReport(
         generatedOrderId,
@@ -39,12 +39,14 @@ void OrderBook::displayOrderBook()
     orderBookCSV.setHeaders(headers);
 
     vector<InputOrder> sortedBuyOrders = buyOrders;
-    // sort(sortedBuyOrders.begin(), sortedBuyOrders.end(), [](const InputOrder &a, const InputOrder &b)
-    //      { return a.getPrice() > b.getPrice(); });
+    sort(sortedBuyOrders.begin(), sortedBuyOrders.end(), [](const InputOrder &a, const InputOrder &b) {
+        return a.getPrice() > b.getPrice();
+    });
 
     vector<InputOrder> sortedSellOrders = sellOrders;
-    // sort(sortedSellOrders.begin(), sortedSellOrders.end(), [](const InputOrder &a, const InputOrder &b)
-    //      { return a.getPrice() < b.getPrice(); });
+    sort(sortedSellOrders.begin(), sortedSellOrders.end(), [](const InputOrder &a, const InputOrder &b) {
+        return a.getPrice() < b.getPrice();
+    });
 
     int maxRows = max(sortedBuyOrders.size(), sortedSellOrders.size());
 
