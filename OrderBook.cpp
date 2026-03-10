@@ -43,9 +43,10 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
             2, 
             passive.getQuantity(),
             fillPrice));
+        
         if (order.getSide() == 1) {sellOrders.erase(sellOrders.begin());} 
         else { buyOrders.erase(buyOrders.begin());}
-        return reports;
+        
     }
 
     else{
