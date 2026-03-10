@@ -13,6 +13,7 @@ private:
     int side;
     double price;
     int quantity;
+    string orderId;
 
 public:
     InputOrder(string clientOrderId, string instrument, int side, double price, int quantity)
@@ -31,6 +32,8 @@ public:
     int getSide() const { return side; }
     int getQuantity() const { return quantity; }
     double getPrice() const { return price; }
+    void setOrderId(string id) { orderId = id; }
+    string getOrderId() const { return orderId; }
 };
 
 #endif

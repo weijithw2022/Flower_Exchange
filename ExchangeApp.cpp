@@ -23,8 +23,11 @@ int main()
         {
             orderBooks.emplace(instrument, OrderBook(instrument));
         }
-        ExecutionReport report = orderBooks.at(instrument).addOrder(order);
-        executionReports[instrument].push_back(report);
+        vector<ExecutionReport> reports = orderBooks.at(instrument).addOrder(order);
+        for (const auto& report : reports)
+        {
+            executionReports[instrument].push_back(report);
+        }
     }
 
     for (auto& [inst, book] : orderBooks)
