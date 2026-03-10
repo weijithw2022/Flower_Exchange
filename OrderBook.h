@@ -18,7 +18,9 @@ private:
 public:
     OrderBook(string instrumentName) : instrument(instrumentName) {}
 
-    ExecutionReport addOrder(InputOrder order);
+    bool OrderBook::canMatch(const InputOrder& order) {}
+
+    vector<ExecutionReport> OrderBook::addOrder(InputOrder order);
 
     void displayOrderBook();
 

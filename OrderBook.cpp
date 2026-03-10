@@ -3,32 +3,77 @@
 #include <iostream>
 #include "GenerateCSV.h"
 
-ExecutionReport OrderBook::addOrder(InputOrder order)
+bool OrderBook::canMatch(const InputOrder& order) 
+{
+    if (order.getSide() == 1) 
+    {
+        return !sellOrders.empty() && order.getPrice() >= sellOrders.front().getPrice();
+    } 
+    else 
+    {
+        return !buyOrders.empty() && order.getPrice() <= buyOrders.front().getPrice();
+    }
+}
+
+vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
 {
     string generatedOrderId = OrderIDGenerator::generateOrderID();
 
-    if (order.getSide() == 1)
+    vector <ExecutionReport> reports;
+
+    if (canMatch(order))
     {
-        buyOrders.push_back(order);
-        sort(buyOrders.begin(), buyOrders.end(), [](const InputOrder &a, const InputOrder &b) {
-            return a.getPrice() > b.getPrice();
-        });
+        InputOrder& passive = (order.getSide() == 1) ? sellOrders.front() : buyOrders.front();
+        double fillPrice = passive.getPrice();
+
+        reports.push_back(ExecutionReport(
+            generatedOrderId,
+            order.getClientOrderId(),
+            order.getInstrument(),
+            order.getSide(),
+            2, 
+            order.getQuantity(),
+            fillPrice));
+        
+        reports.push_back(ExecutionReport(
+            passive.getOrderId(),
+            passive.getClientOrderId(),
+            passive.getInstrument(),
+            passive.getSide(),
+            2, 
+            passive.getQuantity(),
+            fillPrice));
+        if (order.getSide() == 1) {sellOrders.erase(sellOrders.begin());} 
+        else { buyOrders.erase(buyOrders.begin());}
+        return reports;
     }
-    else
-    {
-        sellOrders.push_back(order);
-        sort(sellOrders.begin(), sellOrders.end(), [](const InputOrder &a, const InputOrder &b) {
-            return a.getPrice() < b.getPrice();
-        });
-    }
-    return ExecutionReport(
-        generatedOrderId,
-        order.getClientOrderId(),
-        order.getInstrument(),
-        order.getSide(),
-        0,
-        order.getQuantity(),
-        order.getPrice());
+
+    else{
+        order.setOrderId(generatedOrderId);
+
+        if (order.getSide() == 1){   
+            buyOrders.push_back(order);
+            sort(buyOrders.begin(), buyOrders.end(), [](const InputOrder &a, const InputOrder &b) {
+                return a.getPrice() > b.getPrice();
+            });
+        }
+        else
+        {
+            sellOrders.push_back(order);
+            sort(sellOrders.begin(), sellOrders.end(), [](const InputOrder &a, const InputOrder &b) {
+                return a.getPrice() < b.getPrice();
+            });
+        }
+        reports.push_back(ExecutionReport(
+            generatedOrderId,
+            order.getClientOrderId(),
+            order.getInstrument(),
+            order.getSide(),
+            0,  
+            order.getQuantity(),
+            order.getPrice()));
+        }
+    return reports; 
 } 
 
 
