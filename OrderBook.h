@@ -14,6 +14,8 @@ private:
     string instrument;
     vector<InputOrder> buyOrders;  
     vector<InputOrder> sellOrders; 
+    map<double, int> buySeqCounter;
+    map<double, int> sellSeqCounter;
 
 public:
     OrderBook(string instrumentName) : instrument(instrumentName) {}
