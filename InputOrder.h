@@ -14,6 +14,7 @@ private:
     double price;
     int quantity;
     string orderId;
+    int prioritySequence;
 
 public:
     InputOrder(string clientOrderId, string instrument, int side, double price, int quantity)
@@ -34,6 +35,9 @@ public:
     double getPrice() const { return price; }
     void setOrderId(string id) { orderId = id; }
     string getOrderId() const { return orderId; }
+    void setPrioritySequence(int seq) { prioritySequence = seq; }
+    int getPrioritySequence() const { return prioritySequence; }
+
 };
 
 #endif
