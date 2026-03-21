@@ -1,5 +1,6 @@
 #include "OrderBook.h"
 #include "OrderIDGenerator.h"
+#include "WriteOrderBook.h"
 #include <iostream>
 #include "GenerateCSV.h"
 
@@ -171,42 +172,46 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
 
 void OrderBook::displayOrderBook()
 {
-    GenerateCSV orderBookCSV("order_book_" + instrument + ".csv");
-    vector<string> headers = {"Seq", "OrderId", "Qty", "Price", "Price", "Qty", "OrderId", "Seq"};
-    orderBookCSV.setHeaders(headers);
-
-    vector<InputOrder> sortedBuyOrders = buyOrders;
-    sort(sortedBuyOrders.begin(), sortedBuyOrders.end(), [](const InputOrder &a, const InputOrder &b)
-         { return a.getPrice() > b.getPrice(); });
-
-    vector<InputOrder> sortedSellOrders = sellOrders;
-    sort(sortedSellOrders.begin(), sortedSellOrders.end(), [](const InputOrder &a, const InputOrder &b)
-         { return a.getPrice() < b.getPrice(); });
-
-    int maxRows = max(sortedBuyOrders.size(), sortedSellOrders.size());
-
-    for (int i = 0; i < maxRows; i++)
-    {
-        vector<string> row(8, "");
-
-        // Left side: Buy orders
-        if (i < (int)sortedBuyOrders.size())
-        {
-            row[0] = to_string(sortedBuyOrders[i].getPrioritySequence()); // Buy Order Priority Sequence
-            row[1] = sortedBuyOrders[i].getClientOrderId();               // Buy Order ID (left)
-            row[2] = to_string(sortedBuyOrders[i].getQuantity());         // Buy Quantity
-            row[3] = to_string(sortedBuyOrders[i].getPrice());            // Buy Price
-        }
-
-        if (i < (int)sortedSellOrders.size())
-        {
-            row[4] = to_string(sortedSellOrders[i].getPrice());            // Sell Price
-            row[5] = to_string(sortedSellOrders[i].getQuantity());         // Sell Quantity
-            row[6] = sortedSellOrders[i].getClientOrderId();               // Sell Order ID (right)
-            row[7] = to_string(sortedSellOrders[i].getPrioritySequence()); // Sell Order Priority Sequence
-        }
-
-        orderBookCSV.addRow(row);
-    }
-    orderBookCSV.writeCSV();
+    WriteOrderBook::write(buyOrders, sellOrders, instrument);
 }
+// void OrderBook::displayOrderBook()
+// {
+//     GenerateCSV orderBookCSV("order_book_" + instrument + ".csv");
+//     vector<string> headers = {"Seq", "OrderId", "Qty", "Price", "Price", "Qty", "OrderId", "Seq"};
+//     orderBookCSV.setHeaders(headers);
+
+//     vector<InputOrder> sortedBuyOrders = buyOrders;
+//     sort(sortedBuyOrders.begin(), sortedBuyOrders.end(), [](const InputOrder &a, const InputOrder &b)
+//          { return a.getPrice() > b.getPrice(); });
+
+//     vector<InputOrder> sortedSellOrders = sellOrders;
+//     sort(sortedSellOrders.begin(), sortedSellOrders.end(), [](const InputOrder &a, const InputOrder &b)
+//          { return a.getPrice() < b.getPrice(); });
+
+//     int maxRows = max(sortedBuyOrders.size(), sortedSellOrders.size());
+
+//     for (int i = 0; i < maxRows; i++)
+//     {
+//         vector<string> row(8, "");
+
+//         // Left side: Buy orders
+//         if (i < (int)sortedBuyOrders.size())
+//         {
+//             row[0] = to_string(sortedBuyOrders[i].getPrioritySequence()); // Buy Order Priority Sequence
+//             row[1] = sortedBuyOrders[i].getClientOrderId();               // Buy Order ID (left)
+//             row[2] = to_string(sortedBuyOrders[i].getQuantity());         // Buy Quantity
+//             row[3] = to_string(sortedBuyOrders[i].getPrice());            // Buy Price
+//         }
+
+//         if (i < (int)sortedSellOrders.size())
+//         {
+//             row[4] = to_string(sortedSellOrders[i].getPrice());            // Sell Price
+//             row[5] = to_string(sortedSellOrders[i].getQuantity());         // Sell Quantity
+//             row[6] = sortedSellOrders[i].getClientOrderId();               // Sell Order ID (right)
+//             row[7] = to_string(sortedSellOrders[i].getPrioritySequence()); // Sell Order Priority Sequence
+//         }
+
+//         orderBookCSV.addRow(row);
+//     }
+//     orderBookCSV.writeCSV();
+// }
