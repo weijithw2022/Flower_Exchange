@@ -15,9 +15,9 @@ bool OrderBook::canMatch(const InputOrder &order)
     }
 }
 
-vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
+vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& generatedOrderId)
 {
-    string generatedOrderId = OrderIDGenerator::generateOrderID();
+    // string generatedOrderId = OrderIDGenerator::generateOrderID();
 
     vector<ExecutionReport> reports;
     int remainingQuantity = order.getQuantity();

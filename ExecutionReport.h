@@ -3,6 +3,10 @@
 
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 using namespace std;
 
 class ExecutionReport
@@ -16,10 +20,15 @@ private:
     int status;
     int quantity;
     double price;
+    string reason;
+    string transactionTime;
 
 public:
     ExecutionReport(string id, string clientOrderId, string instrument, int side, int status, int quantity, double price)
-        : orderId(id), clientOrderId(clientOrderId), instrument(instrument), side(side), status(status), quantity(quantity), price(price) {}
+        : orderId(id), clientOrderId(clientOrderId), instrument(instrument), side(side), status(status), quantity(quantity), price(price), reason(""), transactionTime(generateTimestamp()) {}
+
+    ExecutionReport(string id, string clientOrderId, string instrument, int side, int status, int quantity, double price, string r)
+        : orderId(id), clientOrderId(clientOrderId), instrument(instrument), side(side), status(status), quantity(quantity), price(price), reason(r), transactionTime(generateTimestamp()) {}
 
     string getOrderId() const { return orderId; }
     string getClientOrderId() const { return clientOrderId; }
@@ -28,20 +37,22 @@ public:
     int getStatus() const { return status; }
     int getQuantity() const { return quantity; }
     double getPrice() const { return price; }
+    void setReason(string r) { reason = r; }
+    string getReason() const { return reason; }
+    string getTransactionTime() const { return transactionTime; }
 
-    // string getSideString() const {
-    //     return (side == 1) ? "BUY" : "SELL";
-    // }
-
-    // string getStatusString() const {
-    //     switch(status) {
-    //         case 1: return "NEW";
-    //         case 2: return "FILLED";
-    //         case 3: return "PARTIAL_FILL";
-    //         case 4: return "REJECTED";
-    //         default: return "UNKNOWN";
-    //     }
-    // }
+private:
+    static string generateTimestamp()
+    {
+        auto now = chrono::system_clock::now();
+        auto ms = chrono::duration_cast<chrono::milliseconds>(now.time_since_epoch()) % 1000;
+        time_t t = chrono::system_clock::to_time_t(now);
+        tm tm = *gmtime(&t);
+        ostringstream oss;
+        oss << put_time(&tm, "%Y%m%d-%H%M%S")
+            << "." << setfill('0') << setw(3) << ms.count();
+        return oss.str();
+    }
 };
 
 #endif

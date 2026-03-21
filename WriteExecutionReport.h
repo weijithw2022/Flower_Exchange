@@ -16,7 +16,7 @@ public:
     {
         GenerateCSV csv(filename);
 
-        vector<string> headers = {"Order ID", "Client Order ID", "Instrument", "Side", "Exec Status", "Quantity", "Price"};
+        vector<string> headers = {"Order ID", "Client Order ID", "Instrument", "Side", "Exec Status", "Quantity", "Price", "Reason", "Transaction Time" };
         csv.setHeaders(headers);
 
         for (const auto &r : reports)
@@ -28,7 +28,10 @@ public:
                 to_string(r.getSide()),
                 statusToString(r.getStatus()),
                 to_string(r.getQuantity()),
-                formatPrice(r.getPrice())};
+                formatPrice(r.getPrice()),
+                r.getReason(),
+                r.getTransactionTime()
+            };
             csv.addRow(row);
         }
 
