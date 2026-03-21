@@ -25,35 +25,125 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
     {
         InputOrder &passive = (order.getSide() == 1) ? sellOrders.front() : buyOrders.front();
         double fillPrice = passive.getPrice();
+        int aggressiveQuantity = order.getQuantity();
+        int passiveQuantity = passive.getQuantity();
+        int fillQuantity = min(aggressiveQuantity, passiveQuantity);
 
-        reports.push_back(ExecutionReport(
-            generatedOrderId,
-            order.getClientOrderId(),
-            order.getInstrument(),
-            order.getSide(),
-            2,
-            order.getQuantity(),
-            fillPrice));
-
-        reports.push_back(ExecutionReport(
-            passive.getOrderId(),
-            passive.getClientOrderId(),
-            passive.getInstrument(),
-            passive.getSide(),
-            2,
-            passive.getQuantity(),
-            fillPrice));
-
-        if (order.getSide() == 1)
+        // Full fill
+        if (aggressiveQuantity == passiveQuantity)
         {
-            sellOrders.erase(sellOrders.begin());
+            reports.push_back(ExecutionReport(
+                generatedOrderId,
+                order.getClientOrderId(),
+                order.getInstrument(),
+                order.getSide(),
+                2,
+                //order.getQuantity(), 
+                fillQuantity,
+                fillPrice));
+
+            reports.push_back(ExecutionReport(
+                passive.getOrderId(),
+                passive.getClientOrderId(),
+                passive.getInstrument(),
+                passive.getSide(),
+                2,
+                // passive.getQuantity(),
+                fillQuantity,
+                fillPrice));
+
+            if (order.getSide() == 1)
+            {
+                sellOrders.erase(sellOrders.begin());
+            }
+            else
+            {
+                buyOrders.erase(buyOrders.begin());
+            }
         }
-        else
-        {
-            buyOrders.erase(buyOrders.begin());
+
+        // Partial fill -> aggressive order has remaining quantity
+        else if(aggressiveQuantity > passiveQuantity){
+            reports.push_back(ExecutionReport(
+                generatedOrderId,
+                order.getClientOrderId(),
+                order.getInstrument(),
+                order.getSide(),
+                3,
+                fillQuantity,
+                fillPrice));
+            
+            reports.push_back(ExecutionReport(
+                passive.getOrderId(),
+                passive.getClientOrderId(),
+                passive.getInstrument(),
+                passive.getSide(),
+                2,
+                fillQuantity,
+                fillPrice));
+            
+            if (order.getSide() == 1){
+                sellOrders.erase(sellOrders.begin());
+            }
+            else{
+                buyOrders.erase(buyOrders.begin());
+            }
+
+            int remainingQuantity = aggressiveQuantity - fillQuantity;
+            order.setOrderId(generatedOrderId);
+            order.setQuantity(remainingQuantity);
+
+            if (order.getSide() == 1)
+            {
+                buySeqCounter[order.getPrice()]++;       
+                order.setPrioritySequence(buySeqCounter[order.getPrice()]);
+                
+                buyOrders.push_back(order);
+                sort(buyOrders.begin(), buyOrders.end(), [](const InputOrder &a, const InputOrder &b)
+                     {
+                    if (a.getPrice() != b.getPrice()) {
+                        return a.getPrice() > b.getPrice();
+                    }
+                    return a.getPrioritySequence() < b.getPrioritySequence(); });
+            }
+            else
+            {
+                sellSeqCounter[order.getPrice()]++;
+                order.setPrioritySequence(sellSeqCounter[order.getPrice()]);
+
+                sellOrders.push_back(order);
+                sort(sellOrders.begin(), sellOrders.end(), [](const InputOrder &a, const InputOrder &b)
+                     {
+                    if (a.getPrice() != b.getPrice()) {
+                        return a.getPrice() < b.getPrice();
+                    }
+                    return a.getPrioritySequence() < b.getPrioritySequence(); });
+            }
+
+        }
+
+        else{
+            reports.push_back(ExecutionReport(
+                generatedOrderId,
+                order.getClientOrderId(),
+                order.getInstrument(),
+                order.getSide(),
+                2,
+                fillQuantity,
+                fillPrice));
+            
+            reports.push_back(ExecutionReport(
+                passive.getOrderId(),
+                passive.getClientOrderId(),
+                passive.getInstrument(),
+                passive.getSide(),
+                3,
+                fillQuantity,
+                fillPrice));
+            
+            passive.setQuantity(passiveQuantity - fillQuantity);
         }
     }
-
     else
     {
         order.setOrderId(generatedOrderId);

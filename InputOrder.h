@@ -32,6 +32,7 @@ public:
     string getInstrument() const { return instrument; }
     int getSide() const { return side; }
     int getQuantity() const { return quantity; }
+    void setQuantity(int newQuantity) { quantity = newQuantity; }
     double getPrice() const { return price; }
     void setOrderId(string id) { orderId = id; }
     string getOrderId() const { return orderId; }
