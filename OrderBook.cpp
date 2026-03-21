@@ -20,17 +20,17 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
     string generatedOrderId = OrderIDGenerator::generateOrderID();
 
     vector<ExecutionReport> reports;
+    int remainingQuantity = order.getQuantity();
 
-    if (canMatch(order))
+    while (remainingQuantity > 0 && canMatch(order))
     {
         InputOrder &passive = (order.getSide() == 1) ? sellOrders.front() : buyOrders.front();
         double fillPrice = passive.getPrice();
-        int aggressiveQuantity = order.getQuantity();
         int passiveQuantity = passive.getQuantity();
-        int fillQuantity = min(aggressiveQuantity, passiveQuantity);
+        int fillQuantity = min(remainingQuantity, passiveQuantity);
 
         // Full fill
-        if (aggressiveQuantity == passiveQuantity)
+        if (remainingQuantity == passiveQuantity)
         {
             reports.push_back(ExecutionReport(
                 generatedOrderId,
@@ -60,10 +60,13 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
             {
                 buyOrders.erase(buyOrders.begin());
             }
+
+            remainingQuantity = 0;
+            // remainingQuantity -= fillQuantity; 
         }
 
         // Partial fill -> aggressive order has remaining quantity
-        else if(aggressiveQuantity > passiveQuantity){
+        else if(remainingQuantity > passiveQuantity){
             reports.push_back(ExecutionReport(
                 generatedOrderId,
                 order.getClientOrderId(),
@@ -89,36 +92,36 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
                 buyOrders.erase(buyOrders.begin());
             }
 
-            int remainingQuantity = aggressiveQuantity - fillQuantity;
-            order.setOrderId(generatedOrderId);
+            remainingQuantity  -= fillQuantity;
+            // order.setOrderId(generatedOrderId);
             order.setQuantity(remainingQuantity);
 
-            if (order.getSide() == 1)
-            {
-                buySeqCounter[order.getPrice()]++;       
-                order.setPrioritySequence(buySeqCounter[order.getPrice()]);
+            // if (order.getSide() == 1)
+            // {
+            //     buySeqCounter[order.getPrice()]++;       
+            //     order.setPrioritySequence(buySeqCounter[order.getPrice()]);
                 
-                buyOrders.push_back(order);
-                sort(buyOrders.begin(), buyOrders.end(), [](const InputOrder &a, const InputOrder &b)
-                     {
-                    if (a.getPrice() != b.getPrice()) {
-                        return a.getPrice() > b.getPrice();
-                    }
-                    return a.getPrioritySequence() < b.getPrioritySequence(); });
-            }
-            else
-            {
-                sellSeqCounter[order.getPrice()]++;
-                order.setPrioritySequence(sellSeqCounter[order.getPrice()]);
+            //     buyOrders.push_back(order);
+            //     sort(buyOrders.begin(), buyOrders.end(), [](const InputOrder &a, const InputOrder &b)
+            //          {
+            //         if (a.getPrice() != b.getPrice()) {
+            //             return a.getPrice() > b.getPrice();
+            //         }
+            //         return a.getPrioritySequence() < b.getPrioritySequence(); });
+            // }
+            // else
+            // {
+            //     sellSeqCounter[order.getPrice()]++;
+            //     order.setPrioritySequence(sellSeqCounter[order.getPrice()]);
 
-                sellOrders.push_back(order);
-                sort(sellOrders.begin(), sellOrders.end(), [](const InputOrder &a, const InputOrder &b)
-                     {
-                    if (a.getPrice() != b.getPrice()) {
-                        return a.getPrice() < b.getPrice();
-                    }
-                    return a.getPrioritySequence() < b.getPrioritySequence(); });
-            }
+            //     sellOrders.push_back(order);
+            //     sort(sellOrders.begin(), sellOrders.end(), [](const InputOrder &a, const InputOrder &b)
+            //          {
+            //         if (a.getPrice() != b.getPrice()) {
+            //             return a.getPrice() < b.getPrice();
+            //         }
+            //         return a.getPrioritySequence() < b.getPrioritySequence(); });
+            // }
 
         }
 
@@ -141,12 +144,15 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
                 fillQuantity,
                 fillPrice));
             
-            passive.setQuantity(passiveQuantity - fillQuantity);
+            passive.setQuantity(passiveQuantity - fillQuantity);\
+            remainingQuantity = 0;
         }
     }
-    else
+
+    if (remainingQuantity > 0)
     {
         order.setOrderId(generatedOrderId);
+        order.setQuantity(remainingQuantity);
 
         if (order.getSide() == 1)
         {
@@ -174,6 +180,18 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
                 }
                 return a.getPrioritySequence() < b.getPrioritySequence(); });
         }
+        // reports.push_back(ExecutionReport(
+        //     generatedOrderId,
+        //     order.getClientOrderId(),
+        //     order.getInstrument(),
+        //     order.getSide(),
+        //     0,
+        //     order.getQuantity(),
+        //     order.getPrice()));
+    }
+
+    if (reports.empty())
+    {
         reports.push_back(ExecutionReport(
             generatedOrderId,
             order.getClientOrderId(),
