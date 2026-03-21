@@ -30,7 +30,7 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
         int fillQuantity = min(aggressiveQuantity, passiveQuantity);
 
         // Full fill
-        if (aggressiveQuantity == fillQuantity)
+        if (aggressiveQuantity == passiveQuantity)
         {
             reports.push_back(ExecutionReport(
                 generatedOrderId,
@@ -63,7 +63,7 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order)
         }
 
         // Partial fill -> aggressive order has remaining quantity
-        else if(aggressiveQuantity > fillQuantity){
+        else if(aggressiveQuantity > passiveQuantity){
             reports.push_back(ExecutionReport(
                 generatedOrderId,
                 order.getClientOrderId(),
