@@ -96,33 +96,6 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
             // order.setOrderId(generatedOrderId);
             order.setQuantity(remainingQuantity);
 
-            // if (order.getSide() == 1)
-            // {
-            //     buySeqCounter[order.getPrice()]++;       
-            //     order.setPrioritySequence(buySeqCounter[order.getPrice()]);
-                
-            //     buyOrders.push_back(order);
-            //     sort(buyOrders.begin(), buyOrders.end(), [](const InputOrder &a, const InputOrder &b)
-            //          {
-            //         if (a.getPrice() != b.getPrice()) {
-            //             return a.getPrice() > b.getPrice();
-            //         }
-            //         return a.getPrioritySequence() < b.getPrioritySequence(); });
-            // }
-            // else
-            // {
-            //     sellSeqCounter[order.getPrice()]++;
-            //     order.setPrioritySequence(sellSeqCounter[order.getPrice()]);
-
-            //     sellOrders.push_back(order);
-            //     sort(sellOrders.begin(), sellOrders.end(), [](const InputOrder &a, const InputOrder &b)
-            //          {
-            //         if (a.getPrice() != b.getPrice()) {
-            //             return a.getPrice() < b.getPrice();
-            //         }
-            //         return a.getPrioritySequence() < b.getPrioritySequence(); });
-            // }
-
         }
 
         else{
@@ -180,14 +153,6 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
                 }
                 return a.getPrioritySequence() < b.getPrioritySequence(); });
         }
-        // reports.push_back(ExecutionReport(
-        //     generatedOrderId,
-        //     order.getClientOrderId(),
-        //     order.getInstrument(),
-        //     order.getSide(),
-        //     0,
-        //     order.getQuantity(),
-        //     order.getPrice()));
     }
 
     if (reports.empty())
