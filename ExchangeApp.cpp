@@ -73,11 +73,11 @@ int main()
     }
 
     if (!rejectedReports.empty())
-        WriteExecutionReport::write(rejectedReports, "rejected_execution_rep.csv");
+        WriteExecutionReport::write(rejectedReports, "rejected_execution_rep.csv", true);
     
     for (auto &[inst, reports] : executionReports)
     {
-        WriteExecutionReport::write(reports, "execution_rep_" + inst + ".csv");
+        WriteExecutionReport::write(reports, "execution_rep_" + inst + ".csv", false);
     }
 
     for (auto &[inst, book] : orderBooks)
