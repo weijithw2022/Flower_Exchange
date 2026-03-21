@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sstream>
+
 using namespace std;
 
 class OrderIDGenerator {
@@ -25,7 +26,5 @@ public:
         return counter;
     }
 };
-
-int OrderIDGenerator::counter = 0;
 
 #endif

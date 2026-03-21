@@ -22,7 +22,7 @@ public:
 
     bool canMatch(const InputOrder& order);
 
-    vector<ExecutionReport> addOrder(InputOrder order);
+    vector<ExecutionReport> addOrder(InputOrder order, const string& generatedOrderId);
 
     void displayOrderBook();
 
