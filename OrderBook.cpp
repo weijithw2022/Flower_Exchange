@@ -6,7 +6,7 @@
 
 bool OrderBook::canMatch(const InputOrder &order)
 {
-    if (order.getSide() == 1)
+    if (order.getSide() ==  Side::Buy)
     {
         return !sellOrders.empty() && order.getPrice() >= sellOrders.front().getPrice();
     }
@@ -25,7 +25,7 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
 
     while (remainingQuantity > 0 && canMatch(order))
     {
-        InputOrder &passive = (order.getSide() == 1) ? sellOrders.front() : buyOrders.front();
+        InputOrder &passive = (order.getSide() == Side::Buy) ? sellOrders.front() : buyOrders.front();
         double fillPrice = passive.getPrice();
         int passiveQuantity = passive.getQuantity();
         int fillQuantity = min(remainingQuantity, passiveQuantity);
@@ -38,7 +38,7 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
                 order.getClientOrderId(),
                 order.getInstrument(),
                 order.getSide(),
-                2,
+                ExecStatus::Fill,
                 //order.getQuantity(), 
                 fillQuantity,
                 fillPrice));
@@ -48,12 +48,12 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
                 passive.getClientOrderId(),
                 passive.getInstrument(),
                 passive.getSide(),
-                2,
+                ExecStatus::Fill,
                 // passive.getQuantity(),
                 fillQuantity,
                 fillPrice));
 
-            if (order.getSide() == 1)
+            if (order.getSide() == Side::Buy)
             {
                 sellOrders.erase(sellOrders.begin());
             }
@@ -73,7 +73,7 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
                 order.getClientOrderId(),
                 order.getInstrument(),
                 order.getSide(),
-                3,
+                ExecStatus::PFill,
                 fillQuantity,
                 fillPrice));
             
@@ -82,11 +82,12 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
                 passive.getClientOrderId(),
                 passive.getInstrument(),
                 passive.getSide(),
-                2,
+                //2,
+                ExecStatus::Fill,
                 fillQuantity,
                 fillPrice));
             
-            if (order.getSide() == 1){
+            if (order.getSide() == Side::Buy){
                 sellOrders.erase(sellOrders.begin());
             }
             else{
@@ -105,7 +106,8 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
                 order.getClientOrderId(),
                 order.getInstrument(),
                 order.getSide(),
-                2,
+                // 2,
+                ExecStatus::Fill,
                 fillQuantity,
                 fillPrice));
             
@@ -114,7 +116,8 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
                 passive.getClientOrderId(),
                 passive.getInstrument(),
                 passive.getSide(),
-                3,
+                // 3,
+                ExecStatus::PFill,
                 fillQuantity,
                 fillPrice));
             
@@ -128,7 +131,7 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
         order.setOrderId(generatedOrderId);
         order.setQuantity(remainingQuantity);
 
-        if (order.getSide() == 1)
+        if (order.getSide() == Side::Buy)
         {
             buySeqCounter[order.getPrice()]++;       
             order.setPrioritySequence(buySeqCounter[order.getPrice()]);
@@ -163,7 +166,8 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
             order.getClientOrderId(),
             order.getInstrument(),
             order.getSide(),
-            0,
+            //0,
+            ExecStatus::New,
             order.getQuantity(),
             order.getPrice()));
     }

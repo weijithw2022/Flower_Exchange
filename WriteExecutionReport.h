@@ -7,6 +7,8 @@
 #include <sstream>
 #include "ExecutionReport.h"
 #include "GenerateCSV.h"
+#include "Side.h"
+#include "ExecStatus.h"
 using namespace std;
 
 class WriteExecutionReport
@@ -29,7 +31,7 @@ public:
                 r.getOrderId(),
                 r.getClientOrderId(),
                 r.getInstrument(),
-                to_string(r.getSide()),
+                sideToString(r.getSide()),
                 statusToString(r.getStatus()),
                 to_string(r.getQuantity()),
                 formatPrice(r.getPrice()),
@@ -47,18 +49,31 @@ public:
     }
 
 private:
-    static string statusToString(int status)
+    static string statusToString(ExecStatus status)
     {
         switch (status)
         {
-        case 0:
+        case ExecStatus::New:
             return "New";
-        case 1:
+        case ExecStatus::Rejected:
             return "Rejected";
-        case 2:
+        case ExecStatus::Fill:
             return "Fill";
-        case 3:
+        case ExecStatus::PFill:
             return "Pfill";
+        default:
+            return "Unknown";
+        }
+    }
+
+    static string sideToString(Side side)
+    {
+        switch (side)
+        {
+        case Side::Buy:
+            return "1";
+        case Side::Sell:
+            return "2";
         default:
             return "Unknown";
         }

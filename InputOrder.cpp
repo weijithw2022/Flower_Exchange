@@ -1,4 +1,5 @@
 #include "InputOrder.h"
+#include "Side.h"
 #include <vector>
 #include <algorithm>
 using namespace std;
@@ -16,7 +17,7 @@ tuple<bool, string> InputOrder::validate_order() const
     if (find(validInstruments.begin(), validInstruments.end(), instrument) == validInstruments.end())
         return {false, "Invalid Instrument"};
     
-    if (side != 1 && side != 2)
+    if (side != Side::Buy && side != Side::Sell)
         return {false, "Invalid Side"};
 
     if (price <= 0)

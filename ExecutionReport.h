@@ -7,6 +7,8 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include "ExecStatus.h"
+#include "Side.h"
 using namespace std;
 
 class ExecutionReport
@@ -16,25 +18,27 @@ private:
     string orderId;
     string clientOrderId;
     string instrument;
-    int side;
-    int status;
+    //int side;
+    Side side;
+    // int status;
+    ExecStatus status;
     int quantity;
     double price;
     string reason;
     string transactionTime;
 
 public:
-    ExecutionReport(string id, string clientOrderId, string instrument, int side, int status, int quantity, double price)
+    ExecutionReport(string id, string clientOrderId, string instrument, Side side, ExecStatus status, int quantity, double price)
         : orderId(id), clientOrderId(clientOrderId), instrument(instrument), side(side), status(status), quantity(quantity), price(price), reason(""), transactionTime(generateTimestamp()) {}
 
-    ExecutionReport(string id, string clientOrderId, string instrument, int side, int status, int quantity, double price, string r)
+    ExecutionReport(string id, string clientOrderId, string instrument, Side side, ExecStatus status, int quantity, double price, string r)
         : orderId(id), clientOrderId(clientOrderId), instrument(instrument), side(side), status(status), quantity(quantity), price(price), reason(r), transactionTime(generateTimestamp()) {}
 
     string getOrderId() const { return orderId; }
     string getClientOrderId() const { return clientOrderId; }
     string getInstrument() const { return instrument; }
-    int getSide() const { return side; }
-    int getStatus() const { return status; }
+    Side getSide() const { return side; }
+    ExecStatus getStatus() const { return status; }
     int getQuantity() const { return quantity; }
     double getPrice() const { return price; }
     void setReason(string r) { reason = r; }

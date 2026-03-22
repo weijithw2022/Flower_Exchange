@@ -3,6 +3,8 @@
 
 #include <string>
 #include <tuple>
+#include "Side.h"
+#include "ExecStatus.h"
 using namespace std;
 
 class InputOrder
@@ -10,7 +12,8 @@ class InputOrder
 private:
     string clientOrderId;
     string instrument;
-    int side;
+    Side side;
+    //int side;
     double price;
     int quantity;
     string orderId;
@@ -21,7 +24,7 @@ public:
     {
         this->clientOrderId = clientOrderId;
         this->instrument = instrument;
-        this->side = side;
+        this->side = static_cast<Side>(side);
         this->quantity = quantity;
         this->price = price;
     }
@@ -29,7 +32,7 @@ public:
     tuple<bool, string> validate_order() const;
     string getClientOrderId() const { return clientOrderId; }
     string getInstrument() const { return instrument; }
-    int getSide() const { return side; }
+    Side getSide() const { return side; }
     int getQuantity() const { return quantity; }
     void setQuantity(int newQuantity) { quantity = newQuantity; }
     double getPrice() const { return price; }

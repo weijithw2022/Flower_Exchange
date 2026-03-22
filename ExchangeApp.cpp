@@ -51,7 +51,8 @@ int main()
                 order.getClientOrderId(),
                 order.getInstrument(),
                 order.getSide(),
-                1,
+                //1,
+                ExecStatus::Rejected,
                 order.getQuantity(),
                 order.getPrice(),
                 errorMsg);
