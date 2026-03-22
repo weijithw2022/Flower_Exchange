@@ -1,6 +1,7 @@
 #include "OrderBook.h"
 #include "OrderIDGenerator.h"
 #include "WriteOrderBook.h"
+#include "ExecutionReportFactory.h"
 #include <iostream>
 #include "GenerateCSV.h"
 
@@ -33,25 +34,39 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
         // Full fill
         if (remainingQuantity == passiveQuantity)
         {
-            reports.push_back(ExecutionReport(
-                generatedOrderId,
-                order.getClientOrderId(),
-                order.getInstrument(),
-                order.getSide(),
-                ExecStatus::Fill,
-                //order.getQuantity(), 
-                fillQuantity,
-                fillPrice));
+            // reports.push_back(ExecutionReport(
+            //     generatedOrderId,
+            //     order.getClientOrderId(),
+            //     order.getInstrument(),
+            //     order.getSide(),
+            //     ExecStatus::Fill,
+            //     //order.getQuantity(), 
+            //     fillQuantity,
+            //     fillPrice));
 
-            reports.push_back(ExecutionReport(
-                passive.getOrderId(),
-                passive.getClientOrderId(),
-                passive.getInstrument(),
-                passive.getSide(),
-                ExecStatus::Fill,
-                // passive.getQuantity(),
+            reports.push_back(ExecutionReportFactory::fill(
+                generatedOrderId,
+                order,
                 fillQuantity,
-                fillPrice));
+                fillPrice
+            ));
+
+            // reports.push_back(ExecutionReport(
+            //     passive.getOrderId(),
+            //     passive.getClientOrderId(),
+            //     passive.getInstrument(),
+            //     passive.getSide(),
+            //     ExecStatus::Fill,
+            //     // passive.getQuantity(),
+            //     fillQuantity,
+            //     fillPrice));
+
+            reports.push_back(ExecutionReportFactory::fill(
+                passive.getOrderId(),
+                passive,
+                fillQuantity,
+                fillPrice
+            ));
 
             if (order.getSide() == Side::Buy)
             {
@@ -68,24 +83,38 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
 
         // Partial fill -> aggressive order has remaining quantity
         else if(remainingQuantity > passiveQuantity){
-            reports.push_back(ExecutionReport(
+            // reports.push_back(ExecutionReport(
+            //     generatedOrderId,
+            //     order.getClientOrderId(),
+            //     order.getInstrument(),
+            //     order.getSide(),
+            //     ExecStatus::PFill,
+            //     fillQuantity,
+            //     fillPrice));
+
+            reports.push_back(ExecutionReportFactory::pfill(
                 generatedOrderId,
-                order.getClientOrderId(),
-                order.getInstrument(),
-                order.getSide(),
-                ExecStatus::PFill,
+                order,
                 fillQuantity,
-                fillPrice));
+                fillPrice
+            ));
             
-            reports.push_back(ExecutionReport(
+            // reports.push_back(ExecutionReport(
+            //     passive.getOrderId(),
+            //     passive.getClientOrderId(),
+            //     passive.getInstrument(),
+            //     passive.getSide(),
+            //     //2,
+            //     ExecStatus::Fill,
+            //     fillQuantity,
+            //     fillPrice));
+
+            reports.push_back(ExecutionReportFactory::fill(
                 passive.getOrderId(),
-                passive.getClientOrderId(),
-                passive.getInstrument(),
-                passive.getSide(),
-                //2,
-                ExecStatus::Fill,
+                passive,
                 fillQuantity,
-                fillPrice));
+                fillPrice
+            ));
             
             if (order.getSide() == Side::Buy){
                 sellOrders.erase(sellOrders.begin());
@@ -101,25 +130,39 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
         }
 
         else{
-            reports.push_back(ExecutionReport(
+            // reports.push_back(ExecutionReport(
+            //     generatedOrderId,
+            //     order.getClientOrderId(),
+            //     order.getInstrument(),
+            //     order.getSide(),
+            //     // 2,
+            //     ExecStatus::Fill,
+            //     fillQuantity,
+            //     fillPrice));
+
+            reports.push_back(ExecutionReportFactory::fill(
                 generatedOrderId,
-                order.getClientOrderId(),
-                order.getInstrument(),
-                order.getSide(),
-                // 2,
-                ExecStatus::Fill,
+                order,
                 fillQuantity,
-                fillPrice));
+                fillPrice
+            ));
             
-            reports.push_back(ExecutionReport(
+            // reports.push_back(ExecutionReport(
+            //     passive.getOrderId(),
+            //     passive.getClientOrderId(),
+            //     passive.getInstrument(),
+            //     passive.getSide(),
+            //     // 3,
+            //     ExecStatus::PFill,
+            //     fillQuantity,
+            //     fillPrice));
+
+            reports.push_back(ExecutionReportFactory::pfill(
                 passive.getOrderId(),
-                passive.getClientOrderId(),
-                passive.getInstrument(),
-                passive.getSide(),
-                // 3,
-                ExecStatus::PFill,
+                passive,
                 fillQuantity,
-                fillPrice));
+                fillPrice
+            ));
             
             passive.setQuantity(passiveQuantity - fillQuantity);\
             remainingQuantity = 0;
@@ -161,15 +204,19 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
 
     if (reports.empty())
     {
-        reports.push_back(ExecutionReport(
+        // reports.push_back(ExecutionReport(
+        //     generatedOrderId,
+        //     order.getClientOrderId(),
+        //     order.getInstrument(),
+        //     order.getSide(),
+        //     //0,
+        //     ExecStatus::New,
+        //     order.getQuantity(),
+        //     order.getPrice()));
+        reports.push_back(ExecutionReportFactory::newOrder(
             generatedOrderId,
-            order.getClientOrderId(),
-            order.getInstrument(),
-            order.getSide(),
-            //0,
-            ExecStatus::New,
-            order.getQuantity(),
-            order.getPrice()));
+            order
+        ));
     }
     return reports;
 }

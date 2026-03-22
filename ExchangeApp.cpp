@@ -8,6 +8,7 @@
 #include "OrderIDGenerator.h"
 #include "ReadInputOrderCSV.h"
 #include "WriteExecutionReport.h"
+#include "ExecutionReportFactory.h"
 
 using namespace std;
 
@@ -46,16 +47,22 @@ int main()
         auto [valid, errorMsg] = order.validate_order();
         if (!valid)
         {
-            ExecutionReport rep(
+            // ExecutionReport rep(
+            //     generatedOrderId,
+            //     order.getClientOrderId(),
+            //     order.getInstrument(),
+            //     order.getSide(),
+            //     //1,
+            //     ExecStatus::Rejected,
+            //     order.getQuantity(),
+            //     order.getPrice(),
+            //     errorMsg);
+
+            ExecutionReport rep = ExecutionReportFactory::rejected(
                 generatedOrderId,
-                order.getClientOrderId(),
-                order.getInstrument(),
-                order.getSide(),
-                //1,
-                ExecStatus::Rejected,
-                order.getQuantity(),
-                order.getPrice(),
-                errorMsg);
+                order,
+                errorMsg
+            );
             
             rejectedReports.push_back(rep);
             continue;
