@@ -29,4 +29,12 @@ public:
     string getInstrument() const { return instrument; }
     int getBuyOrderCount() const { return buyOrders.size(); }
     int getSellOrderCount() const { return sellOrders.size(); }
+
+private:
+    void insertIntoBuyBook (InputOrder& order, const string& orderId);
+    void insertIntoSellBook(InputOrder& order, const string& orderId);
+    void insertIntoBook(InputOrder& order, const string& orderId);
+    void removePassive(Side aggressiveSide);
 };
+
+

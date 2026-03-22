@@ -17,6 +17,50 @@ bool OrderBook::canMatch(const InputOrder &order)
     }
 }
 
+void OrderBook::insertIntoBuyBook(InputOrder& order, const string& orderId)
+{
+    order.setOrderId(orderId);
+    buySeqCounter[order.getPrice()]++;
+    order.setPrioritySequence(buySeqCounter[order.getPrice()]);
+
+    buyOrders.push_back(order);
+    sort(buyOrders.begin(), buyOrders.end(), [](const InputOrder& a, const InputOrder& b) {
+        if (a.getPrice() != b.getPrice())
+            return a.getPrice() > b.getPrice();       
+        return a.getPrioritySequence() < b.getPrioritySequence();
+    });
+}
+
+void OrderBook::insertIntoSellBook(InputOrder& order, const string& orderId)
+{
+    order.setOrderId(orderId);
+    sellSeqCounter[order.getPrice()]++;
+    order.setPrioritySequence(sellSeqCounter[order.getPrice()]);
+
+    sellOrders.push_back(order);
+    sort(sellOrders.begin(), sellOrders.end(), [](const InputOrder& a, const InputOrder& b) {
+        if (a.getPrice() != b.getPrice())
+            return a.getPrice() < b.getPrice();       
+        return a.getPrioritySequence() < b.getPrioritySequence();
+    });
+}
+
+void OrderBook::insertIntoBook(InputOrder& order, const string& orderId)
+{
+    if (order.getSide() == Side::Buy)
+        insertIntoBuyBook(order, orderId);
+    else
+        insertIntoSellBook(order, orderId);
+}
+
+void OrderBook::removePassive(Side aggressiveSide)
+{
+    if (aggressiveSide == Side::Buy)
+        sellOrders.erase(sellOrders.begin());
+    else
+        buyOrders.erase(buyOrders.begin());
+}
+
 vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& generatedOrderId)
 {
     // string generatedOrderId = OrderIDGenerator::generateOrderID();
@@ -70,11 +114,11 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
 
             if (order.getSide() == Side::Buy)
             {
-                sellOrders.erase(sellOrders.begin());
+                removePassive(Side::Buy);
             }
             else
             {
-                buyOrders.erase(buyOrders.begin());
+                removePassive(Side::Sell);
             }
 
             remainingQuantity = 0;
@@ -117,10 +161,10 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
             ));
             
             if (order.getSide() == Side::Buy){
-                sellOrders.erase(sellOrders.begin());
+                removePassive(Side::Buy);
             }
             else{
-                buyOrders.erase(buyOrders.begin());
+                removePassive(Side::Sell);
             }
 
             remainingQuantity  -= fillQuantity;
@@ -171,35 +215,8 @@ vector<ExecutionReport> OrderBook::addOrder(InputOrder order, const string& gene
 
     if (remainingQuantity > 0)
     {
-        order.setOrderId(generatedOrderId);
         order.setQuantity(remainingQuantity);
-
-        if (order.getSide() == Side::Buy)
-        {
-            buySeqCounter[order.getPrice()]++;       
-            order.setPrioritySequence(buySeqCounter[order.getPrice()]);
-            
-            buyOrders.push_back(order);
-            sort(buyOrders.begin(), buyOrders.end(), [](const InputOrder &a, const InputOrder &b)
-                 {
-                if (a.getPrice() != b.getPrice()) {
-                    return a.getPrice() > b.getPrice();
-                }
-                return a.getPrioritySequence() < b.getPrioritySequence(); });
-        }
-        else
-        {
-            sellSeqCounter[order.getPrice()]++;
-            order.setPrioritySequence(sellSeqCounter[order.getPrice()]);
-
-            sellOrders.push_back(order);
-            sort(sellOrders.begin(), sellOrders.end(), [](const InputOrder &a, const InputOrder &b)
-                 {
-                if (a.getPrice() != b.getPrice()) {
-                    return a.getPrice() < b.getPrice();
-                }
-                return a.getPrioritySequence() < b.getPrioritySequence(); });
-        }
+        insertIntoBook(order, generatedOrderId);
     }
 
     if (reports.empty())
