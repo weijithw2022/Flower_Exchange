@@ -29,7 +29,7 @@ public:
         this->price = price;
     }
 
-    tuple<bool, string> validate_order() const;
+    // tuple<bool, string> validate_order() const;
     string getClientOrderId() const { return clientOrderId; }
     string getInstrument() const { return instrument; }
     Side getSide() const { return side; }
