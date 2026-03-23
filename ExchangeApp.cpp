@@ -8,6 +8,7 @@
 #include "OrderIDGenerator.h"
 #include "ReadInputOrderCSV.h"
 #include "WriteExecutionReport.h"
+#include "WriteRejectedReport.h"
 #include "ExecutionReportFactory.h"
 
 using namespace std;
@@ -81,11 +82,13 @@ int main()
     }
 
     if (!rejectedReports.empty())
-        WriteExecutionReport::write(rejectedReports, "rejected_execution_rep.csv", true);
+        // WriteExecutionReport::write(rejectedReports, "rejected_execution_rep.csv", true);
+        WriteRejectedReport::write(rejectedReports, "rejected_execution_rep.csv");
     
     for (auto &[inst, reports] : executionReports)
     {
-        WriteExecutionReport::write(reports, "execution_rep_" + inst + ".csv", false);
+        // WriteExecutionReport::write(reports, "execution_rep_" + inst + ".csv", false);
+        WriteExecutionReport::write(reports, "execution_rep_" + inst + ".csv");
     }
 
     for (auto &[inst, book] : orderBooks)

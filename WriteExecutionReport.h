@@ -14,15 +14,15 @@ using namespace std;
 class WriteExecutionReport
 {
 public:
-    static void write(const vector<ExecutionReport> &reports, const string &filename = "execution_rep.csv", bool includeReason = false)
+    static void write(const vector<ExecutionReport> &reports, const string &filename = "execution_rep.csv" )//,bool includeReason = false)
     {
         GenerateCSV csv(filename);
 
         vector<string> headers = {"Order ID", "Client Order ID", "Instrument", "Side", "Exec Status", "Quantity", "Price" , "Transaction Time" };
-        if (includeReason)
-        {
-            headers.insert(headers.end() - 1, "Reason");
-        }
+        // if (includeReason)
+        // {
+        //     headers.insert(headers.end() - 1, "Reason");
+        // }
         csv.setHeaders(headers);
 
         for (const auto &r : reports)
@@ -38,10 +38,10 @@ public:
                 r.getTransactionTime()
             };
 
-            if (includeReason)
-            {
-                row.insert(row.end() - 1, r.getReason());
-            }
+            // if (includeReason)
+            // {
+            //     row.insert(row.end() - 1, r.getReason());
+            // }
             csv.addRow(row);
         }
 
