@@ -7,43 +7,45 @@
 #include <string>
 #include <stdexcept>
 #include "InputOrder.h"
-using namespace std;
 
-class ReadInputOrder {
+class ReadInputOrder
+{
 public:
-    static vector<InputOrder> readCSV(const string& filename) {
-        vector<InputOrder> orders;
-        ifstream file(filename);
+    static std::vector<InputOrder> readCSV(const std::string &filename)
+    {
+        std::vector<InputOrder> orders;
+        std::ifstream file(filename);
 
         if (!file.is_open())
-            throw runtime_error("Could not open file: " + filename);
+            throw std::runtime_error("Could not open file: " + filename);
 
-        string line;
-        getline(file, line); 
+        std::string line;
+        std::getline(file, line);
 
-        while (getline(file, line)) {
-            if (line.empty()) continue;
+        while (std::getline(file, line))
+        {
+            if (line.empty())
+                continue;
 
-            istringstream ss(line);
-            string clientOrderId, instrument, sideStr, quantityStr, priceStr;
+            std::istringstream ss(line);
+            std::string clientOrderId, instrument, sideStr, quantityStr, priceStr;
 
-            getline(ss, clientOrderId, ',');
-            getline(ss, instrument,    ',');
-            getline(ss, sideStr,       ',');
-            getline(ss, quantityStr,   ',');
-            getline(ss, priceStr,      ',');
+            std::getline(ss, clientOrderId, ',');
+            std::getline(ss, instrument, ',');
+            std::getline(ss, sideStr, ',');
+            std::getline(ss, quantityStr, ',');
+            std::getline(ss, priceStr, ',');
 
-            int    side     = stoi(trim(sideStr));
-            int    quantity = stoi(trim(quantityStr));
-            double price    = stod(trim(priceStr));
+            int side = std::stoi(trim(sideStr));
+            int quantity = std::stoi(trim(quantityStr));
+            double price = std::stod(trim(priceStr));
 
             orders.emplace_back(
                 trim(clientOrderId),
                 trim(instrument),
                 side,
                 price,
-                quantity
-            );
+                quantity);
         }
 
         file.close();
@@ -51,10 +53,11 @@ public:
     }
 
 private:
-    static string trim(const string& s) {
-        size_t start = s.find_first_not_of(" \t\r\n");
-        size_t end   = s.find_last_not_of(" \t\r\n");
-        return (start == string::npos) ? "" : s.substr(start, end - start + 1);
+    static std::string trim(const std::string &s)
+    {
+        std::size_t start = s.find_first_not_of(" \t\r\n");
+        std::size_t end = s.find_last_not_of(" \t\r\n");
+        return (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
     }
 };
 

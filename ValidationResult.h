@@ -3,20 +3,18 @@
 
 #include <string>
 
-using namespace std;
-
 struct ValidationResult
 {
-    bool        valid;
-    string field;
-    string message;
+    bool valid;
+    std::string field;
+    std::string message;
 
     static ValidationResult pass()
     {
         return {true, "", ""};
     }
 
-    static ValidationResult fail(const string& field, const string& message)
+    static ValidationResult fail(const std::string &field, const std::string &message)
     {
         return {false, field, message};
     }

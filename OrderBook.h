@@ -6,35 +6,31 @@
 #include "InputOrder.h"
 #include "ExecutionReport.h"
 
-using namespace std;
-
 class OrderBook
 {
 private:
-    string instrument;
-    vector<InputOrder> buyOrders;  
-    vector<InputOrder> sellOrders; 
-    map<double, int> buySeqCounter;
-    map<double, int> sellSeqCounter;
+    std::string instrument;
+    std::vector<InputOrder> buyOrders;
+    std::vector<InputOrder> sellOrders;
+    std::map<double, int> buySeqCounter;
+    std::map<double, int> sellSeqCounter;
 
 public:
-    OrderBook(string instrumentName) : instrument(instrumentName) {}
+    OrderBook(std::string instrumentName) : instrument(instrumentName) {}
 
-    bool canMatch(const InputOrder& order);
+    bool canMatch(const InputOrder &order);
 
-    vector<ExecutionReport> addOrder(InputOrder order, const string& generatedOrderId);
+    std::vector<ExecutionReport> addOrder(InputOrder order, const std::string &generatedOrderId);
 
     void displayOrderBook();
 
-    string getInstrument() const { return instrument; }
+    std::string getInstrument() const { return instrument; }
     int getBuyOrderCount() const { return buyOrders.size(); }
     int getSellOrderCount() const { return sellOrders.size(); }
 
 private:
-    void insertIntoBuyBook (InputOrder& order, const string& orderId);
-    void insertIntoSellBook(InputOrder& order, const string& orderId);
-    void insertIntoBook(InputOrder& order, const string& orderId);
+    void insertIntoBuyBook(InputOrder &order, const std::string &orderId);
+    void insertIntoSellBook(InputOrder &order, const std::string &orderId);
+    void insertIntoBook(InputOrder &order, const std::string &orderId);
     void removePassive(Side aggressiveSide);
 };
-
-

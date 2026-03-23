@@ -9,16 +9,15 @@
 #include "GenerateCSV.h"
 #include "Side.h"
 #include "ExecStatus.h"
-using namespace std;
 
 class WriteExecutionReport
 {
 public:
-    static void write(const vector<ExecutionReport> &reports, const string &filename = "execution_rep.csv" )//,bool includeReason = false)
+    static void write(const std::vector<ExecutionReport> &reports, const std::string &filename = "execution_rep.csv" )//,bool includeReason = false)
     {
         GenerateCSV csv(filename);
 
-        vector<string> headers = {"Order ID", "Client Order ID", "Instrument", "Side", "Exec Status", "Quantity", "Price" , "Transaction Time" };
+        std::vector<std::string> headers = {"Order ID", "Client Order ID", "Instrument", "Side", "Exec Status", "Quantity", "Price" , "Transaction Time" };
         // if (includeReason)
         // {
         //     headers.insert(headers.end() - 1, "Reason");
@@ -27,13 +26,13 @@ public:
 
         for (const auto &r : reports)
         {
-            vector<string> row = {
+            std::vector<std::string> row = {
                 r.getOrderId(),
                 r.getClientOrderId(),
                 r.getInstrument(),
                 sideToString(r.getSide()),
                 statusToString(r.getStatus()),
-                to_string(r.getQuantity()),
+                std::to_string(r.getQuantity()),
                 formatPrice(r.getPrice()),
                 r.getTransactionTime()
             };
@@ -49,7 +48,7 @@ public:
     }
 
 private:
-    static string statusToString(ExecStatus status)
+    static std::string statusToString(ExecStatus status)
     {
         switch (status)
         {
@@ -66,7 +65,7 @@ private:
         }
     }
 
-    static string sideToString(Side side)
+    static std::string sideToString(Side side)
     {
         switch (side)
         {
@@ -79,10 +78,10 @@ private:
         }
     }
 
-    static string formatPrice(double price)
+    static std::string formatPrice(double price)
     {
-        ostringstream oss;
-        oss << fixed << setprecision(2) << price;
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2) << price;
         return oss.str();
     }
 };

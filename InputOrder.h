@@ -5,22 +5,21 @@
 #include <tuple>
 #include "Side.h"
 #include "ExecStatus.h"
-using namespace std;
 
 class InputOrder
 {
 private:
-    string clientOrderId;
-    string instrument;
+    std::string clientOrderId;
+    std::string instrument;
     Side side;
-    //int side;
+    // int side;
     double price;
     int quantity;
-    string orderId;
+    std::string orderId;
     int prioritySequence;
 
 public:
-    InputOrder(string clientOrderId, string instrument, int side, double price, int quantity)
+    InputOrder(std::string clientOrderId, std::string instrument, int side, double price, int quantity)
     {
         this->clientOrderId = clientOrderId;
         this->instrument = instrument;
@@ -30,17 +29,16 @@ public:
     }
 
     // tuple<bool, string> validate_order() const;
-    string getClientOrderId() const { return clientOrderId; }
-    string getInstrument() const { return instrument; }
+    std::string getClientOrderId() const { return clientOrderId; }
+    std::string getInstrument() const { return instrument; }
     Side getSide() const { return side; }
     int getQuantity() const { return quantity; }
     void setQuantity(int newQuantity) { quantity = newQuantity; }
     double getPrice() const { return price; }
-    void setOrderId(string id) { orderId = id; }
-    string getOrderId() const { return orderId; }
+    void setOrderId(std::string id) { orderId = id; }
+    std::string getOrderId() const { return orderId; }
     void setPrioritySequence(int seq) { prioritySequence = seq; }
     int getPrioritySequence() const { return prioritySequence; }
-
 };
 
 #endif

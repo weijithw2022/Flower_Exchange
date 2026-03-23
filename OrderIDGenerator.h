@@ -4,16 +4,14 @@
 #include <string>
 #include <sstream>
 
-using namespace std;
-
 class OrderIDGenerator {
 private:
     static int counter;
 
 public:
-    static string generateOrderID() {
+    static std::string generateOrderID() {
         counter++;
-        stringstream ss;
+        std::stringstream ss;
         ss << "ord" << counter;
         return ss.str();
     }

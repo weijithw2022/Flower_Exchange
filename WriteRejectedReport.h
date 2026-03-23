@@ -7,62 +7,64 @@
 #include <sstream>
 #include "ExecutionReport.h"
 #include "GenerateCSV.h"
-using namespace std;
 
 class WriteRejectedReport
 {
 public:
-    static void write(const vector<ExecutionReport>& reports, const string& filename = "rejected_execution_rep.csv")
+    static void write(const std::vector<ExecutionReport> &reports, const std::string &filename = "rejected_execution_rep.csv")
     {
         GenerateCSV csv(filename);
 
         csv.setHeaders({"Order ID", "Client Order ID", "Instrument",
                         "Side", "Exec Status", "Quantity", "Price",
-                        "Reason",                             
+                        "Reason",
                         "Transaction Time"});
 
-        for (const auto& r : reports)
+        for (const auto &r : reports)
         {
-            csv.addRow({
-                r.getOrderId(),
-                r.getClientOrderId(),
-                r.getInstrument(),
-                sideToString(r.getSide()),
-                statusToString(r.getStatus()),
-                to_string(r.getQuantity()),
-                formatPrice(r.getPrice()),
-                r.getReason(),                                 
-                r.getTransactionTime()
-            });
+            csv.addRow({r.getOrderId(),
+                        r.getClientOrderId(),
+                        r.getInstrument(),
+                        sideToString(r.getSide()),
+                        statusToString(r.getStatus()),
+                        std::to_string(r.getQuantity()),
+                        formatPrice(r.getPrice()),
+                        r.getReason(),
+                        r.getTransactionTime()});
         }
 
         csv.writeCSV();
     }
 
 private:
-    static string sideToString(Side side)
+    static std::string sideToString(Side side)
     {
         switch (side)
         {
-        case Side::Buy:  return "1";
-        case Side::Sell: return "2";
-        default:         return "Unknown";
+        case Side::Buy:
+            return "1";
+        case Side::Sell:
+            return "2";
+        default:
+            return "Unknown";
         }
     }
 
-    static string statusToString(ExecStatus status)
+    static std::string statusToString(ExecStatus status)
     {
         switch (status)
         {
-        case ExecStatus::Rejected: return "Rejected";
-        default:                   return "Unknown";
+        case ExecStatus::Rejected:
+            return "Rejected";
+        default:
+            return "Unknown";
         }
     }
 
-    static string formatPrice(double price)
+    static std::string formatPrice(double price)
     {
-        ostringstream oss;
-        oss << fixed << setprecision(2) << price;
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2) << price;
         return oss.str();
     }
 };
