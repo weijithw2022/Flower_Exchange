@@ -13,9 +13,16 @@ public:
         try
         {
             std::filesystem::create_directories(directory);
-            for (const auto &entry : std::filesystem::directory_iterator(directory))
+            std::filesystem::create_directories(directory + "/execution_reps");
+            std::filesystem::create_directories(directory + "/order_books");
+            std::filesystem::create_directories(directory + "/rejected_execution_reps");
+
+            for (const auto &entry : std::filesystem::recursive_directory_iterator(directory))
             {
-                std::string filename = entry.path().filename().string();
+                if (!entry.is_regular_file())
+                    continue;
+
+                const std::string filename = entry.path().filename().string();
                 if (shouldDelete(filename))
                     std::filesystem::remove(entry.path());
             }
@@ -29,7 +36,8 @@ public:
 private:
     bool shouldDelete(const std::string &filename)
     {
-        bool isCsv = filename.rfind(".csv") == filename.length() - 4;
+        const bool isCsv = filename.length() >= 4 &&
+                           filename.rfind(".csv") == filename.length() - 4;
         bool isOutput = filename.find("execution_rep") == 0 ||
                         filename.find("order_book_") == 0 ||
                         filename.find("rejected_execution_rep") == 0;

@@ -14,7 +14,7 @@ class WriteOrderBook
 public:
     static void write(std::vector<InputOrder> buyOrders, std::vector<InputOrder> sellOrders, const std::string& instrument)
     {
-        GenerateCSV csv("output/order_book_" + instrument + ".csv");
+        GenerateCSV csv("output/order_books/order_book_" + instrument + ".csv");
 
         std::vector<std::string> headers = {"Seq", "OrderId", "Qty", "Price", "Price", "Qty", "OrderId", "Seq"};
         csv.setHeaders(headers);
