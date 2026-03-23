@@ -6,6 +6,7 @@
 #include "OrderBook.h"
 #include "InputOrder.h"
 #include "OrderIDGenerator.h"
+#include "OrderValidator.h"
 #include "ReadInputOrderCSV.h"
 #include "WriteExecutionReport.h"
 #include "WriteRejectedReport.h"
@@ -45,8 +46,9 @@ int main()
     for (const auto &order : orders)
     {
         string generatedOrderId = OrderIDGenerator::generateOrderID();
-        auto [valid, errorMsg] = order.validate_order();
-        if (!valid)
+        ValidationResult result      = OrderValidator::validate(order);
+        // auto [valid, errorMsg] = order.validate_order();
+        if (!result.valid)
         {
             // ExecutionReport rep(
             //     generatedOrderId,
@@ -62,7 +64,7 @@ int main()
             ExecutionReport rep = ExecutionReportFactory::rejected(
                 generatedOrderId,
                 order,
-                errorMsg
+                result.message
             );
             
             rejectedReports.push_back(rep);
