@@ -77,7 +77,7 @@ public:
         headers.clear();
         rows.clear();
     }
-    int getRowCount() const { return rows.size(); }
+    std::size_t getRowCount() const { return rows.size(); }
 
 private:
     std::string escapeCSVField(const std::string &field)

@@ -25,8 +25,8 @@ public:
     void displayOrderBook();
 
     std::string getInstrument() const { return instrument; }
-    int getBuyOrderCount() const { return buyOrders.size(); }
-    int getSellOrderCount() const { return sellOrders.size(); }
+    std::size_t getBuyOrderCount() const { return buyOrders.size(); }
+    std::size_t getSellOrderCount() const { return sellOrders.size(); }
 
 private:
     void insertIntoBuyBook(InputOrder &order, const std::string &orderId);
